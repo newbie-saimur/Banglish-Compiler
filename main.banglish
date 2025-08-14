@@ -1,23 +1,22 @@
 shuru
 lekha name;
-dekhao "Enter name:";
 poro (name);
 
 purno sonkha n;
-dekhao "Enter count:";
 poro (n);
 
 jodi (n <= 0) {
-  dekhao "No items";
+  dekhao "No items\n";
 } nahoy jodi (n == 1) {
-  dekhao "One item for {name}";
+  dekhao "One item for {name}\n";
 } nahoy {
-  dekhao "{name} has {n} items";
+  dekhao "{name} has {n} items\n";
 }
 
 for (purno sonkha i = n; i > 0; i--) {
-  dekhao i;
+  dekhao "{i} ";
 }
+dekhao \n;
 
 purno sonkha a = 10;
 purno sonkha b = 3;
@@ -27,9 +26,9 @@ c += 1;
 c -= 2;
 
 jodi (!(a % b == 1) || (a >= b && a > 0)) {
-  dekhao "ok {c}";
+  dekhao "ok {c}\n";
 } nahoy {
-  dekhao "bad";
+  dekhao "bad\n";
 }
 
 ferot dao 0;

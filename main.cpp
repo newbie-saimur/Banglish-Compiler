@@ -59,7 +59,7 @@ struct Lexer {
             if(c=='"'){
                 get(); string val; bool ok=true;
                 while(true){ char d=peek(); if(d=='\0') { ok=false; break; }
-                    if(d=='\\'){ get(); char e=get(); val.push_back(e); }
+                    if(d=='\\'){ get(); char e=get(); val.push_back('\\'); val.push_back(e); }
                     else if(d=='"'){ get(); break; }
                     else { val.push_back(get()); }
                 }
@@ -159,6 +159,10 @@ struct Transpiler {
     static string renderDekhao(const string& inside){
         // inside is either expression or a quoted string token \"...\"
         string s = trim(inside);
+        // special: raw \n triggers newline without quotes
+        if(s == "\\n"){
+            return "std::cout << '\\n';";
+        }
         if(s.size()>=2 && s.front()=='"' && s.back()=='"'){
             string body = s.substr(1, s.size()-2);
             // split by { and }
@@ -175,19 +179,17 @@ struct Transpiler {
             // build cout expression
             string expr;
             if(parts.empty()) expr = "\"\"";
-            for(size_t i=0;i<parts.size();++i){
+        for(size_t i=0;i<parts.size();++i){
                 if(i>0) expr += " << ";
                 if(isExpr[i]) expr += "(" + parts[i] + ")";
                 else {
-                    // escape quotes and backslashes
-                    string lit=parts[i];
-                    string esc; for(char ch: lit){ if(ch=='\\' || ch=='"') esc.push_back('\\'); esc.push_back(ch);} 
-                    expr += "\"" + esc + "\"";
+            // keep C-style escapes (\n, \t, \", \\) as-is
+            expr += "\"" + parts[i] + "\"";
                 }
             }
-            return "std::cout << " + expr + " << std::endl;";
+            return "std::cout << " + expr + ";";
         } else {
-            return "std::cout << (" + s + ") << std::endl;";
+            return "std::cout << (" + s + ");";
         }
     }
 
@@ -474,8 +476,5 @@ int main(){
     ret = system(runCmd.c_str());
     if(ret!=0){ cerr << "Program exited with code " << ret << "\n"; }
 
-    // Also echo output to console
-    ifstream of("output.txt");
-    if(of){ cout << of.rdbuf(); }
     return 0;
 }

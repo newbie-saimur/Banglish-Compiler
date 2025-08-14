@@ -14,6 +14,8 @@ Supported constructs (subset):
 - Assignment, arithmetic, comparisons, logical not `!`
 - Increments/decrements: `++`, `--`, `+=`, `-=`
 - Print: `dekhao <expr>` or `dekhao "string"` or `dekhao "str {var} str"`
+  - Default: no newline at end; use `dekhao \n` to print a newline.
+  - C-style escapes inside strings are honored: `\n`, `\t`, `\"`, `\\`.
 - Input: `poro (x)`
 - Control flow: `jodi` (if), `nahoy jodi` (else if), `nahoy` (else)
 - Loop: `for (...)` like standard C++ syntax inside Banglish, both ++ and -- iterators
