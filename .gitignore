@@ -1,0 +1,8 @@
+.generated/
+*.exe
+*.obj
+*.pdb
+*.ilk
+output_tokens.txt
+output_symbol_table.txt
+output.txt

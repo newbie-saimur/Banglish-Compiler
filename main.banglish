@@ -1,0 +1,8 @@
+shuru
+purno sonkha n = 3;
+dekhao "Count:";
+for (purno sonkha i = 0; i < n; i++) {
+  dekhao i;
+}
+ferot dao 0;
+shesh
