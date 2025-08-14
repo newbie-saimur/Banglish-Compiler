@@ -1,0 +1,12 @@
+#pragma once
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <iomanip>
+#include <filesystem>
+#include "token.h"
+#include "symbol_table.h"
+#include "lexer.h"
+#include "transpiler.h"
