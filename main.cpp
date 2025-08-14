@@ -27,7 +27,7 @@ struct Symbol {
 
 static const set<string> keywords = {
     "shuru","shesh","purno","sonkha","dosomik","lekha","akkhor","sotto-mittha",
-    "jodi","nahoy","ferot","dao","poro","dekhao","for","loop"
+    "jodi","nahoy","poro","dekhao","loop"
 };
 
 static const set<string> simpleOps = {
@@ -305,13 +305,11 @@ struct Transpiler {
                 continue;
             }
 
-            // Loop: support Banglish 'loop' (and legacy 'for'); emit C++ 'for'
-            if(L.rfind("loop",0)==0 || L.rfind("for",0)==0){ 
+            // Loop: Banglish 'loop' -> C++ 'for'
+            if(L.rfind("loop",0)==0){ 
                 string X=L; 
-                if(L.rfind("loop",0)==0){
-                    // replace leading 'loop' with 'for'
-                    X = string("for") + L.substr(4);
-                }
+                // replace leading 'loop' with 'for'
+                X = string("for") + L.substr(4);
                 // replace Banglish types with C++ types in the line
                 auto rep=[&](const string& a,const string& b){
                     size_t pos=0; while((pos=X.find(a,pos))!=string::npos){ X.replace(pos,a.size(),b); pos+=b.size(); }
