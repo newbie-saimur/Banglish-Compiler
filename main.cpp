@@ -214,6 +214,12 @@ struct Transpiler {
             string L = trim(line);
             if(L.empty()) continue;
             if(L=="shuru" || L=="shesh") continue;
+            // If line begins with one or more closing braces, emit them and parse the remainder
+            while(!L.empty() && L[0]=='}'){
+                out.push_back("}");
+                L = trim(L.substr(1));
+            }
+            if(L.empty()) continue;
 
             // Replace multi-word keywords in context for easier handling
             // 1. Declarations: <type> name [= expr];
@@ -361,21 +367,53 @@ static void writeTable(const vector<Token>& toks, const SymbolTable& sym){
     // tokens table
     {
         ofstream f("output_tokens.txt");
-        f << left << setw(8) << "Line" << setw(8) << "Col" << setw(14) << "Type" << "Lexeme" << "\n";
-        f << string(8+8+14+20,'-') << "\n";
         for(const auto& t: toks){
             if(t.type=="EOF") continue;
-            f << left << setw(8) << t.line << setw(8) << t.col << setw(14) << t.type << t.lexeme << "\n";
+            f << t.lexeme << "\n";
         }
     }
     // symbol table
     {
         ofstream f("output_symbol_table.txt");
-        f << left << setw(20) << "Name" << setw(12) << "Type" << setw(8) << "Line" << setw(12) << "Init" << "\n";
-        f << string(20+12+8+12,'-') << "\n";
-        for(const auto& s: sym.all()){
-            f << left << setw(20) << s.name << setw(12) << s.dtype << setw(8) << s.line << setw(12) << (s.initialized?"yes":"no") << "\n";
+        vector<Symbol> rows = sym.all();
+        auto dispType = [](const string& t)->string{
+            if(t == "std::string") return "string";
+            // strip leading "std::" if present on any type
+            const string p = "std::";
+            if(t.rfind(p,0)==0) return t.substr(p.size());
+            return t;
+        };
+        // dynamic widths with larger minimums
+        size_t nameW = max<size_t>(12, string("Name").size());
+        size_t typeW = max<size_t>(14, string("Type").size());
+        size_t lineW = max<size_t>(8, string("Line").size());
+        size_t initW = max<size_t>(8, string("Init").size());
+        for(const auto& s: rows){
+            nameW = max(nameW, s.name.size());
+            typeW = max(typeW, dispType(s.dtype).size());
+            lineW = max(lineW, to_string(s.line).size());
+            initW = max(initW, string(s.initialized?"yes":"no").size());
         }
+        auto border = [&](ostream& o){
+            o << '+' << string(nameW+2,'-')
+              << '+' << string(typeW+2,'-')
+              << '+' << string(lineW+2,'-')
+              << '+' << string(initW+2,'-')
+              << "+\n";
+        };
+        auto cell = [&](const string& s, size_t w){ f << ' ' << left << setw((int)w) << s << ' '; };
+
+        border(f);
+        f << '|' ; cell("Name", nameW); f << '|'; cell("Type", typeW); f << '|'; cell("Line", lineW); f << '|'; cell("Init", initW); f << "|\n";
+        border(f);
+        for(const auto& s: rows){
+            f << '|'; cell(s.name, nameW);
+            f << '|'; cell(dispType(s.dtype), typeW);
+            f << '|'; cell(to_string(s.line), lineW);
+            f << '|'; cell(string(s.initialized?"yes":"no"), initW);
+            f << "|\n";
+        }
+        border(f);
     }
 }
 
