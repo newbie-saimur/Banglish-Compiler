@@ -1,34 +1,56 @@
 shuru
-lekha name;
-poro (name);
-
 purno sonkha n;
 poro (n);
 
 jodi (n <= 0) {
-  dekhao "No items\n";
-} nahoy jodi (n == 1) {
-  dekhao "One item for {name}\n";
-} nahoy {
-  dekhao "{name} has {n} items\n";
+  dekhao "Invalid size\n";
+  ferot dao 0;
 }
 
-for (purno sonkha i = n; i > 0; i--) {
-  dekhao "{i} ";
+purno sonkha a[n];
+
+for (purno sonkha i = 0; i < n; i++) {
+  poro (a[i]);
 }
-dekhao \n;
 
-purno sonkha a = 10;
-purno sonkha b = 3;
-purno sonkha c;
-c = a + b * 2 - 5 / 5;
-c += 1;
-c -= 2;
+purno sonkha sum = 0;
+purno sonkha mn = a[0];
+purno sonkha mx = a[0];
+purno sonkha evens = 0;
 
-jodi (!(a % b == 1) || (a >= b && a > 0)) {
-  dekhao "ok {c}\n";
-} nahoy {
-  dekhao "bad\n";
+for (purno sonkha i = 0; i < n; i++) {
+  sum += a[i];
+  jodi (a[i] < mn) { mn = a[i]; }
+  jodi (a[i] > mx) { mx = a[i]; }
+  jodi (a[i] % 2 == 0) { evens++; }
+}
+
+dosomik sonkha avg = (double)sum / n;
+
+dekhao "Sum: {sum}\n";
+dekhao "Avg: {avg}\n";
+dekhao "Min: {mn}, Max: {mx}\n";
+dekhao "Even count: {evens}\n";
+
+dekhao "Reversed: ";
+for (purno sonkha i = n - 1; i >= 0; i--) {
+  dekhao "{a[i]} ";
+}
+dekhao "\n";
+
+purno sonkha target;
+poro (target);
+
+sotto-mittha found = false;
+for (purno sonkha i = 0; i < n; i++) {
+  jodi (a[i] == target) { found = true; }
+}
+
+jodi (found) {
+    dekhao "Number Found\n";
+}
+nahoy {
+    dekhao "Number Not found\n";
 }
 
 ferot dao 0;

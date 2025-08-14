@@ -11,6 +11,8 @@ This is a small Banglish-to-C++ pipeline that performs:
 
 Supported constructs (subset):
 - Declarations: `purno sonkha`, `dosomik sonkha`, `lekha`, `akkhor`, `sotto-mittha`
+  - Arrays: `purno sonkha a[5];` -> `int a[5];`
+  - Dynamic arrays: `purno sonkha a[n];` -> `vector<int> a(n);` (same for other types)
 - Assignment, arithmetic, comparisons, logical not `!`
 - Increments/decrements: `++`, `--`, `+=`, `-=`
 - Print: `dekhao <expr>` or `dekhao "string"` or `dekhao "str {var} str"`

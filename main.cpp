@@ -34,7 +34,7 @@ static const set<string> simpleOps = {
     "+","-","*","/","%","++","--","+=","-=","*=","/=",
     "<=",">=","<",">","!","==","!=","=",
     "&&","||","&","|",
-    "(",")","{","}",";","," 
+    "(",")","{","}","[","]",";","," 
 };
 
 static bool isIdentStart(char c){ return isalpha((unsigned char)c) || c=='_'; }
@@ -229,19 +229,47 @@ struct Transpiler {
                 string cxxType = mapType(tkw);
                 string rest = trim(L.substr(tkw.size()));
                 if(!rest.empty() && rest[0]==' ') rest = trim(rest);
-                // split on '=' if present
-                string name, init;
+                // detect array: name[expr]
+                string name, init; string arrSize;
                 size_t eq = rest.find('=');
-                if(eq==string::npos){ name = trim(rest); }
-                else{ name = trim(rest.substr(0,eq)); init = trim(rest.substr(eq+1)); }
-                if(!name.empty() && name.back()==';') name.pop_back();
+                string lhs = eq==string::npos ? rest : trim(rest.substr(0,eq));
+                init = eq==string::npos ? string("") : trim(rest.substr(eq+1));
+                if(!lhs.empty() && lhs.back()==';') lhs.pop_back();
                 if(!init.empty() && init.back()==';') init.pop_back();
-                if(!name.empty()) sym.declare(name,cxxType,lineNo);
-                if(!init.empty()) sym.initialize(name);
-                string stmt = cxxType + " " + name;
-                if(!init.empty()) stmt += " = " + init;
-                stmt += ";";
-                out.push_back(stmt);
+                // check lhs for brackets
+                size_t lb = lhs.find('['), rb = lhs.find(']');
+                if(lb!=string::npos && rb!=string::npos && rb>lb){
+                    name = trim(lhs.substr(0,lb));
+                    arrSize = trim(lhs.substr(lb+1, rb-lb-1));
+                } else {
+                    name = trim(lhs);
+                }
+                if(!name.empty()){
+                    string declaredType = cxxType;
+                    string stmt;
+                    if(!arrSize.empty()){
+                        // vector for non-constant size; C array for constant numeric size
+                        bool constSize = !arrSize.empty() && all_of(arrSize.begin(), arrSize.end(), [](char ch){return isdigit((unsigned char)ch);});
+                        if(constSize){
+                            sym.declare(name, cxxType + "[]", lineNo);
+                            stmt = cxxType + " " + name + "[" + arrSize + "]";
+                            if(!init.empty()) stmt += " = " + init; // rarely used
+                            stmt += ";";
+                        } else {
+                            // vector<type> name(arrSize);
+                            string vt = string("vector<") + cxxType + ">";
+                            sym.declare(name, vt, lineNo);
+                            stmt = vt + " " + name + "(" + arrSize + ")";
+                            stmt += ";";
+                        }
+                    } else {
+                        sym.declare(name,cxxType,lineNo);
+                        stmt = cxxType + string(" ") + name;
+                        if(!init.empty()){ stmt += " = " + init; sym.initialize(name);} 
+                        stmt += ";";
+                    }
+                    out.push_back(stmt);
+                }
                 return true;
             };
 
