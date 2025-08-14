@@ -9,7 +9,7 @@ jodi (n <= 0) {
 
 purno sonkha a[n];
 
-for (purno sonkha i = 0; i < n; i++) {
+loop (purno sonkha i = 0; i < n; i++) {
   poro (a[i]);
 }
 
@@ -18,7 +18,7 @@ purno sonkha mn = a[0];
 purno sonkha mx = a[0];
 purno sonkha evens = 0;
 
-for (purno sonkha i = 0; i < n; i++) {
+loop (purno sonkha i = 0; i < n; i++) {
   sum += a[i];
   jodi (a[i] < mn) { mn = a[i]; }
   jodi (a[i] > mx) { mx = a[i]; }
@@ -33,7 +33,7 @@ dekhao "Min: {mn}, Max: {mx}\n";
 dekhao "Even count: {evens}\n";
 
 dekhao "Reversed: ";
-for (purno sonkha i = n - 1; i >= 0; i--) {
+loop (purno sonkha i = n - 1; i >= 0; i--) {
   dekhao "{a[i]} ";
 }
 dekhao "\n";
@@ -42,7 +42,7 @@ purno sonkha target;
 poro (target);
 
 sotto-mittha found = false;
-for (purno sonkha i = 0; i < n; i++) {
+loop (purno sonkha i = 0; i < n; i++) {
   jodi (a[i] == target) { found = true; }
 }
 

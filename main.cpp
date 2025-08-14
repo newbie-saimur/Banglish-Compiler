@@ -27,14 +27,14 @@ struct Symbol {
 
 static const set<string> keywords = {
     "shuru","shesh","purno","sonkha","dosomik","lekha","akkhor","sotto-mittha",
-    "jodi","nahoy","ferot","dao","poro","dekhao","for"
+    "jodi","nahoy","ferot","dao","poro","dekhao","for","loop"
 };
 
 static const set<string> simpleOps = {
     "+","-","*","/","%","++","--","+=","-=","*=","/=",
     "<=",">=","<",">","!","==","!=","=",
     "&&","||","&","|",
-    "(",")","{","}","[","]",";","," 
+    "(",")","{","}",";","," 
 };
 
 static bool isIdentStart(char c){ return isalpha((unsigned char)c) || c=='_'; }
@@ -229,47 +229,19 @@ struct Transpiler {
                 string cxxType = mapType(tkw);
                 string rest = trim(L.substr(tkw.size()));
                 if(!rest.empty() && rest[0]==' ') rest = trim(rest);
-                // detect array: name[expr]
-                string name, init; string arrSize;
+                // split on '=' if present
+                string name, init;
                 size_t eq = rest.find('=');
-                string lhs = eq==string::npos ? rest : trim(rest.substr(0,eq));
-                init = eq==string::npos ? string("") : trim(rest.substr(eq+1));
-                if(!lhs.empty() && lhs.back()==';') lhs.pop_back();
+                if(eq==string::npos){ name = trim(rest); }
+                else{ name = trim(rest.substr(0,eq)); init = trim(rest.substr(eq+1)); }
+                if(!name.empty() && name.back()==';') name.pop_back();
                 if(!init.empty() && init.back()==';') init.pop_back();
-                // check lhs for brackets
-                size_t lb = lhs.find('['), rb = lhs.find(']');
-                if(lb!=string::npos && rb!=string::npos && rb>lb){
-                    name = trim(lhs.substr(0,lb));
-                    arrSize = trim(lhs.substr(lb+1, rb-lb-1));
-                } else {
-                    name = trim(lhs);
-                }
-                if(!name.empty()){
-                    string declaredType = cxxType;
-                    string stmt;
-                    if(!arrSize.empty()){
-                        // vector for non-constant size; C array for constant numeric size
-                        bool constSize = !arrSize.empty() && all_of(arrSize.begin(), arrSize.end(), [](char ch){return isdigit((unsigned char)ch);});
-                        if(constSize){
-                            sym.declare(name, cxxType + "[]", lineNo);
-                            stmt = cxxType + " " + name + "[" + arrSize + "]";
-                            if(!init.empty()) stmt += " = " + init; // rarely used
-                            stmt += ";";
-                        } else {
-                            // vector<type> name(arrSize);
-                            string vt = string("vector<") + cxxType + ">";
-                            sym.declare(name, vt, lineNo);
-                            stmt = vt + " " + name + "(" + arrSize + ")";
-                            stmt += ";";
-                        }
-                    } else {
-                        sym.declare(name,cxxType,lineNo);
-                        stmt = cxxType + string(" ") + name;
-                        if(!init.empty()){ stmt += " = " + init; sym.initialize(name);} 
-                        stmt += ";";
-                    }
-                    out.push_back(stmt);
-                }
+                if(!name.empty()) sym.declare(name,cxxType,lineNo);
+                if(!init.empty()) sym.initialize(name);
+                string stmt = cxxType + " " + name;
+                if(!init.empty()) stmt += " = " + init;
+                stmt += ";";
+                out.push_back(stmt);
                 return true;
             };
 
@@ -333,9 +305,13 @@ struct Transpiler {
                 continue;
             }
 
-            // For: allow standard C++ style; map type keywords inside init
-            if(L.rfind("for",0)==0){ 
+            // Loop: support Banglish 'loop' (and legacy 'for'); emit C++ 'for'
+            if(L.rfind("loop",0)==0 || L.rfind("for",0)==0){ 
                 string X=L; 
+                if(L.rfind("loop",0)==0){
+                    // replace leading 'loop' with 'for'
+                    X = string("for") + L.substr(4);
+                }
                 // replace Banglish types with C++ types in the line
                 auto rep=[&](const string& a,const string& b){
                     size_t pos=0; while((pos=X.find(a,pos))!=string::npos){ X.replace(pos,a.size(),b); pos+=b.size(); }
