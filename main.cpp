@@ -1,14 +1,68 @@
+#include "compiler/std.h"
 #include "compiler/banglish.h"
+#include "compiler/validator.h"
 using namespace std;
 
 static void writeTable(const vector<Token>& toks, const SymbolTable& sym){
-    // tokens table
+    // tokens table (4-column bordered table like the symbol table)
     {
         ofstream f("output_tokens.txt");
-        for(const auto& t: toks){
-            if(t.type=="EOF") continue;
-            f << t.lexeme << "\n";
+    // collect distinct lexemes excluding EOF
+    std::set<string> uniq;
+    for(const auto& t: toks){ if(t.type!="EOF") uniq.insert(t.lexeme); }
+    vector<string> lex(uniq.begin(), uniq.end());
+
+    const int COLS = 3;
+        // compute number of rows
+        size_t rows = (lex.size() + COLS - 1) / COLS;
+        // arrange into grid row-major
+    vector<vector<string>> grid(rows, vector<string>(COLS, ""));
+        for(size_t i=0;i<lex.size();++i){ grid[i/ COLS][i % COLS] = lex[i]; }
+    // column widths: keep overall width equal to previous 4-column (w=28) layout
+    vector<size_t> w(COLS, 0);
+    auto maxsz=[&](size_t a, size_t b){ return a>b? a:b; };
+    const size_t TARGET_INNER = 123; // 4*(28+2) + 3
+    const size_t targetSum = TARGET_INNER - (COLS - 1); // sum of (w+2)
+    size_t baseEach = (targetSum / COLS);
+    if (baseEach >= 2) baseEach -= 2; else baseEach = 0; // convert to w
+    size_t rem = targetSum - COLS * (baseEach + 2);
+    for(int c=0;c<COLS;++c){ w[c] = baseEach + (c < (int)rem ? 1 : 0); }
+        for(size_t r=0;r<rows;++r){ for(int c=0;c<COLS;++c){ w[c] = maxsz(w[c], grid[r][c].size()); } }
+        // helpers
+        auto border = [&](ostream& o){
+            o << '+'; for(int c=0;c<COLS;++c){ o << string(w[c]+2,'-') << '+'; } o << "\n"; };
+        auto cell = [&](const string& s, size_t wi){ f << ' ' << left << setw((int)wi) << s << ' '; };
+        // render table
+        border(f);
+            // merged header 'Tokens'
+            size_t totalContent = 0; for(int c=0;c<COLS;++c) totalContent += (w[c] + 2);
+            // include internal column separators (|) to align with border width
+            totalContent += (COLS - 1);
+                const string title = "Tokens";
+                size_t padL = (totalContent > title.size()) ? (totalContent - title.size())/2 : 0;
+                size_t padR = (totalContent > title.size()) ? (totalContent - title.size() - padL) : 0;
+                f << '|'
+                    << string(padL, ' ') << title << string(padR, ' ')
+                    << '|'
+                    << "\n";
+                border(f);
+        for(size_t r=0;r<rows;++r){
+            f << '|'; for(int c=0;c<COLS;++c){ cell(grid[r][c], w[c]); f << '|'; } f << "\n";
         }
+                border(f);
+                // footer: merged, centered like the header
+                {
+                        size_t totalContent = 0; for(int c=0;c<COLS;++c) totalContent += (w[c] + 2);
+                        totalContent += (COLS - 1);
+                        std::ostringstream oss; oss << "Total tokens found : " << lex.size();
+                        string ft = oss.str();
+                        size_t padL = (totalContent > ft.size()) ? (totalContent - ft.size())/2 : 0;
+                        size_t padR = (totalContent > ft.size()) ? (totalContent - ft.size() - padL) : 0;
+                        f << '|'
+                            << string(padL, ' ') << ft << string(padR, ' ')
+                            << '|' << "\n";
+                        border(f);
+                }
     }
     // symbol table
     {
@@ -21,11 +75,11 @@ static void writeTable(const vector<Token>& toks, const SymbolTable& sym){
             if(t.rfind(p,0)==0) return t.substr(p.size());
             return t;
         };
-        // dynamic widths with larger minimums
-        size_t nameW = max<size_t>(12, string("Name").size());
-        size_t typeW = max<size_t>(14, string("Type").size());
-        size_t lineW = max<size_t>(8, string("Line").size());
-        size_t initW = max<size_t>(8, string("Init").size());
+    // dynamic widths with larger minimums for extra spacing
+    size_t nameW = max<size_t>(22, string("Name").size());
+    size_t typeW = max<size_t>(22, string("Type").size());
+    size_t lineW = max<size_t>(18, string("Line").size());
+    size_t initW = max<size_t>(18, string("Init").size());
         for(const auto& s: rows){
             nameW = max(nameW, s.name.size());
             typeW = max(typeW, dispType(s.dtype).size());
@@ -69,6 +123,19 @@ int main(){
 
     // Transpile
     Transpiler tr; tr.toks = lx.tokens; string cpp = tr.transpile(source);
+
+    // Validate tokens and lines
+    {
+        ofstream vf("output_validation.txt");
+        auto terrs = bg::validateTokens(lx.tokens);
+        auto lerrs = bg::validateLines(source);
+        if(terrs.empty() && lerrs.empty()){
+            vf << "OK\n";
+        } else {
+            for(const auto& e: terrs) vf << e << "\n";
+            for(const auto& e: lerrs) vf << e << "\n";
+        }
+    }
 
     // Emit tokens and symbol table now (symbol table from transpilation)
     writeTable(lx.tokens, tr.sym);
