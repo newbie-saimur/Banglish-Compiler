@@ -1,1 +1,0 @@
-powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -File "c:\Users\Saimur Rahman\Desktop\Compiler Design\Banglish-Compiler\build_and_run.ps1"

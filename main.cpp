@@ -1,6 +1,7 @@
 #include "compiler/std.h"
 #include "compiler/banglish.h"
 #include "compiler/validator.h"
+#include "compiler/parser.h"
 using namespace std;
 
 static void writeTable(const vector<Token>& toks, const SymbolTable& sym){
@@ -121,6 +122,28 @@ int main(){
     // Lex
     Lexer lx(source); lx.lex();
 
+    // Parse and validate with error logging
+    ErrorLogger errorLogger("error_log.txt");
+    BanglishParser parser(lx.tokens, errorLogger);
+    parser.parse();
+    
+    // Write error log
+    errorLogger.writeLog();
+    
+    // Display error summary
+    if (errorLogger.hasErrors()) {
+        cerr << "Compilation failed with " << errorLogger.getErrorCount() << " error(s)";
+        if (errorLogger.hasWarnings()) {
+            cerr << " and " << errorLogger.getWarningCount() << " warning(s)";
+        }
+        cerr << ". See error_log.txt for details.\n";
+        // Continue with transpilation even with errors for educational purposes
+    } else if (errorLogger.hasWarnings()) {
+        cout << "Compilation successful with " << errorLogger.getWarningCount() << " warning(s). See error_log.txt for details.\n";
+    } else {
+        cout << "Compilation successful with no errors or warnings.\n";
+    }
+
     // Transpile
     Transpiler tr; tr.toks = lx.tokens; string cpp = tr.transpile(source);
 
@@ -141,7 +164,7 @@ int main(){
     writeTable(lx.tokens, tr.sym);
 
     // Write transpiled code
-    filesystem::create_directory(".generated");
+    system("mkdir .generated 2>nul || echo Directory exists");
     string transpiledPath = string(".generated/") + "transpiled.cpp";
     ofstream tc(transpiledPath); tc << cpp; tc.close();
 

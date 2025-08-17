@@ -14,7 +14,7 @@ inline std::vector<std::string> validateTokens(const std::vector<Token>& toks){
     std::regex reNumber(R"(^\d+(?:\.\d+)?$)");
     // strings are already quoted with escapes preserved
     std::regex reString(R"(^"(?:\\.|[^"])*"$)");
-    std::regex reOp(R"(^(\+\+|--|\+=|-=|\*=|/=|<=|>=|==|!=|&&|\|\||[+\-*/%<>=!&|(){};,\[\]])$)");
+    std::regex reOp(R"(^(\+\+|--|\+=|-=|\*=|/=|<=|>=|==|!=|&&|\|\||[+*/%<>=!&|(){};,\[\]-])$)");
 
     const std::unordered_set<std::string> kw = {
         // single-word
