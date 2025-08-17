@@ -337,6 +337,16 @@ public:
     void parse() {
         // Validate all tokens
         for (const auto& token : tokens) {
+            // Check for lexer errors first
+            if (token.type == "ERROR") {
+                if (token.lexeme == "UNCLOSED_STRING") {
+                    logger.addError(token.line, token.col, "UNCLOSED_STRING", 
+                        "String literal is not properly closed",
+                        "Add closing quote (\") to end the string");
+                }
+                continue;
+            }
+            
             validateKeyword(token);
             validateIdentifier(token);
             validateOperator(token);

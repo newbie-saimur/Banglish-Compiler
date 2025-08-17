@@ -35,18 +35,43 @@ struct Lexer {
             int l=line, c0=col;
             if(c=='/' && peek(1)=='/') { while(peek()!='\n' && peek()!='\0') get(); continue; }
             if(c=='"'){
-                get(); std::string val; bool ok=true;
-                while(true){ char d=peek(); if(d=='\0') { ok=false; break; }
-                    if(d=='\\'){ get(); char e=get(); val.push_back('\\'); val.push_back(e); }
-                    else if(d=='"'){ get(); break; }
-                    else { val.push_back(get()); }
+                get(); std::string val; bool terminated = false;
+                while(true){ 
+                    char d=peek(); 
+                    if(d=='\0' || d=='\n') { 
+                        break; 
+                    }
+                    if(d=='\\'){ 
+                        get(); 
+                        char e=get(); 
+                        if(e != '\0') {
+                            val.push_back('\\'); 
+                            val.push_back(e); 
+                        }
+                    }
+                    else if(d=='"'){ 
+                        get(); 
+                        terminated = true;
+                        break; 
+                    }
+                    else { 
+                        val.push_back(get()); 
+                    }
                 }
-                add("STRING","\""+val+"\"",l,c0); continue;
+                if(terminated) {
+                    add("STRING","\""+val+"\"",l,c0); 
+                } else {
+                    add("ERROR","UNCLOSED_STRING",l,c0);
+                }
+                continue;
             }
             if(isdigit((unsigned char)c)){
                 std::string num; bool hasDot=false;
                 while(isdigit((unsigned char)peek()) || (!hasDot && peek()=='.')){
-                    if(peek()=='.') hasDot=true; num.push_back(get());
+                    if(peek()=='.') {
+                        hasDot=true;
+                    }
+                    num.push_back(get());
                 }
                 add("NUMBER",num,l,c0); continue;
             }
