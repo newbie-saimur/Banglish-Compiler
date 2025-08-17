@@ -3,12 +3,11 @@
 +-----------------+-----------------+----------+----------+
 | n               | int             | 2        | yes      |
 | a[n]            | int             | 10       | no       |
-| i               | int             | 45       | yes      |
+| i               | int             | 36       | yes      |
 | sum             | int             | 16       | yes      |
 | mn              | int             | 17       | yes      |
 | mx              | int             | 18       | yes      |
 | evens           | int             | 19       | yes      |
 | avg             | double          | 28       | yes      |
 | target          | int             | 41       | yes      |
-| found           | bool            | 44       | yes      |
 +-----------------+-----------------+----------+----------+

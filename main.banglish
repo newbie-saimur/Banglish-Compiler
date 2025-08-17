@@ -41,17 +41,5 @@ dekhao "\n";
 purno sonkha target;
 poro (target);
 
-sotto-mittha found = false;
-loop (purno sonkha i = 0; i < n; i++) {
-  jodi (a[i] == target) { found = true; }
-}
-
-jodi (found) {
-    dekhao "Number Found\n";
-}
-nahoy {
-    dekhao "Number Not found\n";
-}
-
 ferot dao 0;
 shesh

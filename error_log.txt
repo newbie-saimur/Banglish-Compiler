@@ -1,6 +1,6 @@
 === BANGLISH COMPILER ERROR LOG ===
 
-IMPROVEMENTS (40):
+IMPROVEMENTS (34):
 ====================
 IMPROVEMENT [Line 2, Col 14] NAMING_CONVENTION: Single character variable name: 'n'
   Context: Consider using more descriptive names
@@ -102,24 +102,6 @@ IMPROVEMENT [Line 36, Col 31] NAMING_CONVENTION: Single character variable name:
   Context: Consider using more descriptive names
 
 IMPROVEMENT [Line 36, Col 34] NAMING_CONVENTION: Single character variable name: 'i'
-  Context: Consider using more descriptive names
-
-IMPROVEMENT [Line 45, Col 20] NAMING_CONVENTION: Single character variable name: 'i'
-  Context: Consider using more descriptive names
-
-IMPROVEMENT [Line 45, Col 27] NAMING_CONVENTION: Single character variable name: 'i'
-  Context: Consider using more descriptive names
-
-IMPROVEMENT [Line 45, Col 31] NAMING_CONVENTION: Single character variable name: 'n'
-  Context: Consider using more descriptive names
-
-IMPROVEMENT [Line 45, Col 34] NAMING_CONVENTION: Single character variable name: 'i'
-  Context: Consider using more descriptive names
-
-IMPROVEMENT [Line 46, Col 9] NAMING_CONVENTION: Single character variable name: 'a'
-  Context: Consider using more descriptive names
-
-IMPROVEMENT [Line 46, Col 11] NAMING_CONVENTION: Single character variable name: 'i'
   Context: Consider using more descriptive names
 
 === END OF LOG ===

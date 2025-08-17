@@ -1,9 +1,11 @@
+// Banglish Compiler Driver: reads Banglish, analyzes, transpiles to C++, compiles, runs
 #include "compiler/std.h"
 #include "compiler/banglish.h"
 #include "compiler/validator.h"
 #include "compiler/parser.h"
 using namespace std;
 
+// Writes a simple table of unique token lexemes to output_tokens.txt
 void writeTokenTable(const vector<Token>& tokens) {
     ofstream file("output_tokens.txt");
     
@@ -83,6 +85,7 @@ void writeTokenTable(const vector<Token>& tokens) {
     printBorder();
 }
 
+// Writes symbol table (name, type, line, initialized) to output_symbol_table.txt
 void writeSymbolTable(const SymbolTable& symbolTable) {
     ofstream file("output_symbol_table.txt");
     vector<Symbol> symbols = symbolTable.all();
@@ -131,6 +134,8 @@ void writeSymbolTable(const SymbolTable& symbolTable) {
     
     printBorder();
 }
+
+// Reads the entire source file into a string
 string readSourceFile(const string& filename) {
     ifstream file(filename);
     if (!file) {
@@ -140,6 +145,7 @@ string readSourceFile(const string& filename) {
     return string((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
 }
 
+// Validates tokens and lines, writes OK or issues to output_validation.txt
 void writeValidation(const vector<Token>& tokens, const string& source) {
     ofstream file("output_validation.txt");
     auto tokenErrors = bg::validateTokens(tokens);
@@ -157,6 +163,7 @@ void writeValidation(const vector<Token>& tokens, const string& source) {
     }
 }
 
+// Chooses a compiler command (cl or g++) for the current platform
 string getCompilerCommand(const string& sourceFile, const string& outputFile) {
 #ifdef _WIN32
     if (system("where cl >nul 2>nul") == 0) {
@@ -176,20 +183,20 @@ int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    // Read source code
+    // Read Banglish source
     string source = readSourceFile("main.banglish");
     
-    // Tokenization
+    // Lex: tokenize source
     Lexer lexer(source);
     lexer.lex();
     
-    // Parsing and validation
+    // Parse + validate (writes error_log.txt)
     ErrorLogger errorLogger("error_log.txt");
     BanglishParser parser(lexer.tokens, errorLogger);
     parser.parse();
     errorLogger.writeLog();
     
-    // Report compilation status
+    // Report status to console
     if (errorLogger.hasErrors()) {
         cerr << "Compilation failed with " << errorLogger.getErrorCount() << " error(s)";
         if (errorLogger.hasWarnings()) {
@@ -203,20 +210,20 @@ int main() {
         cout << "Compilation successful with no errors or improvements.\n";
     }
     
-    // Transpilation
+    // Transpile Banglish -> C++
     Transpiler transpiler;
     transpiler.toks = lexer.tokens;
     string cppCode = transpiler.transpile(source);
     
-    // Write output files
+    // Write validation, tokens, symbols
     writeValidation(lexer.tokens, source);
     writeTokenTable(lexer.tokens);
     writeSymbolTable(transpiler.sym);
     
-    // Create build directory
+    // Ensure .generated exists
     system("mkdir .generated 2>nul || echo Directory exists");
     
-    // Write and compile transpiled code
+    // Emit transpiled.cpp and compile to program(.exe)
     string transpiledPath = ".generated/transpiled.cpp";
     ofstream transpiledFile(transpiledPath);
     transpiledFile << cppCode;
@@ -235,7 +242,7 @@ int main() {
         return 2;
     }
     
-    // Run the compiled program
+    // Run compiled program with input.txt -> output.txt
 #ifdef _WIN32
     string runCommand = "\"" + executablePath + "\" < input.txt > output.txt";
 #else
@@ -247,5 +254,6 @@ int main() {
         cerr << "Program exited with code " << exitCode << "\n";
     }
     
+    // Done
     return 0;
 }
