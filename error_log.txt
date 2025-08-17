@@ -1,125 +1,125 @@
 === BANGLISH COMPILER ERROR LOG ===
 
-WARNINGS (40):
+IMPROVEMENTS (40):
 ====================
-WARNING [Line 2, Col 14] NAMING_CONVENTION: Single character variable name: 'n'
+IMPROVEMENT [Line 2, Col 14] NAMING_CONVENTION: Single character variable name: 'n'
   Context: Consider using more descriptive names
 
-WARNING [Line 3, Col 7] NAMING_CONVENTION: Single character variable name: 'n'
+IMPROVEMENT [Line 3, Col 7] NAMING_CONVENTION: Single character variable name: 'n'
   Context: Consider using more descriptive names
 
-WARNING [Line 5, Col 7] NAMING_CONVENTION: Single character variable name: 'n'
+IMPROVEMENT [Line 5, Col 7] NAMING_CONVENTION: Single character variable name: 'n'
   Context: Consider using more descriptive names
 
-WARNING [Line 10, Col 14] NAMING_CONVENTION: Single character variable name: 'a'
+IMPROVEMENT [Line 10, Col 14] NAMING_CONVENTION: Single character variable name: 'a'
   Context: Consider using more descriptive names
 
-WARNING [Line 10, Col 16] NAMING_CONVENTION: Single character variable name: 'n'
+IMPROVEMENT [Line 10, Col 16] NAMING_CONVENTION: Single character variable name: 'n'
   Context: Consider using more descriptive names
 
-WARNING [Line 12, Col 20] NAMING_CONVENTION: Single character variable name: 'i'
+IMPROVEMENT [Line 12, Col 20] NAMING_CONVENTION: Single character variable name: 'i'
   Context: Consider using more descriptive names
 
-WARNING [Line 12, Col 27] NAMING_CONVENTION: Single character variable name: 'i'
+IMPROVEMENT [Line 12, Col 27] NAMING_CONVENTION: Single character variable name: 'i'
   Context: Consider using more descriptive names
 
-WARNING [Line 12, Col 31] NAMING_CONVENTION: Single character variable name: 'n'
+IMPROVEMENT [Line 12, Col 31] NAMING_CONVENTION: Single character variable name: 'n'
   Context: Consider using more descriptive names
 
-WARNING [Line 12, Col 34] NAMING_CONVENTION: Single character variable name: 'i'
+IMPROVEMENT [Line 12, Col 34] NAMING_CONVENTION: Single character variable name: 'i'
   Context: Consider using more descriptive names
 
-WARNING [Line 13, Col 9] NAMING_CONVENTION: Single character variable name: 'a'
+IMPROVEMENT [Line 13, Col 9] NAMING_CONVENTION: Single character variable name: 'a'
   Context: Consider using more descriptive names
 
-WARNING [Line 13, Col 11] NAMING_CONVENTION: Single character variable name: 'i'
+IMPROVEMENT [Line 13, Col 11] NAMING_CONVENTION: Single character variable name: 'i'
   Context: Consider using more descriptive names
 
-WARNING [Line 17, Col 19] NAMING_CONVENTION: Single character variable name: 'a'
+IMPROVEMENT [Line 17, Col 19] NAMING_CONVENTION: Single character variable name: 'a'
   Context: Consider using more descriptive names
 
-WARNING [Line 18, Col 19] NAMING_CONVENTION: Single character variable name: 'a'
+IMPROVEMENT [Line 18, Col 19] NAMING_CONVENTION: Single character variable name: 'a'
   Context: Consider using more descriptive names
 
-WARNING [Line 21, Col 20] NAMING_CONVENTION: Single character variable name: 'i'
+IMPROVEMENT [Line 21, Col 20] NAMING_CONVENTION: Single character variable name: 'i'
   Context: Consider using more descriptive names
 
-WARNING [Line 21, Col 27] NAMING_CONVENTION: Single character variable name: 'i'
+IMPROVEMENT [Line 21, Col 27] NAMING_CONVENTION: Single character variable name: 'i'
   Context: Consider using more descriptive names
 
-WARNING [Line 21, Col 31] NAMING_CONVENTION: Single character variable name: 'n'
+IMPROVEMENT [Line 21, Col 31] NAMING_CONVENTION: Single character variable name: 'n'
   Context: Consider using more descriptive names
 
-WARNING [Line 21, Col 34] NAMING_CONVENTION: Single character variable name: 'i'
+IMPROVEMENT [Line 21, Col 34] NAMING_CONVENTION: Single character variable name: 'i'
   Context: Consider using more descriptive names
 
-WARNING [Line 22, Col 10] NAMING_CONVENTION: Single character variable name: 'a'
+IMPROVEMENT [Line 22, Col 10] NAMING_CONVENTION: Single character variable name: 'a'
   Context: Consider using more descriptive names
 
-WARNING [Line 22, Col 12] NAMING_CONVENTION: Single character variable name: 'i'
+IMPROVEMENT [Line 22, Col 12] NAMING_CONVENTION: Single character variable name: 'i'
   Context: Consider using more descriptive names
 
-WARNING [Line 23, Col 9] NAMING_CONVENTION: Single character variable name: 'a'
+IMPROVEMENT [Line 23, Col 9] NAMING_CONVENTION: Single character variable name: 'a'
   Context: Consider using more descriptive names
 
-WARNING [Line 23, Col 11] NAMING_CONVENTION: Single character variable name: 'i'
+IMPROVEMENT [Line 23, Col 11] NAMING_CONVENTION: Single character variable name: 'i'
   Context: Consider using more descriptive names
 
-WARNING [Line 23, Col 27] NAMING_CONVENTION: Single character variable name: 'a'
+IMPROVEMENT [Line 23, Col 27] NAMING_CONVENTION: Single character variable name: 'a'
   Context: Consider using more descriptive names
 
-WARNING [Line 23, Col 29] NAMING_CONVENTION: Single character variable name: 'i'
+IMPROVEMENT [Line 23, Col 29] NAMING_CONVENTION: Single character variable name: 'i'
   Context: Consider using more descriptive names
 
-WARNING [Line 24, Col 9] NAMING_CONVENTION: Single character variable name: 'a'
+IMPROVEMENT [Line 24, Col 9] NAMING_CONVENTION: Single character variable name: 'a'
   Context: Consider using more descriptive names
 
-WARNING [Line 24, Col 11] NAMING_CONVENTION: Single character variable name: 'i'
+IMPROVEMENT [Line 24, Col 11] NAMING_CONVENTION: Single character variable name: 'i'
   Context: Consider using more descriptive names
 
-WARNING [Line 24, Col 27] NAMING_CONVENTION: Single character variable name: 'a'
+IMPROVEMENT [Line 24, Col 27] NAMING_CONVENTION: Single character variable name: 'a'
   Context: Consider using more descriptive names
 
-WARNING [Line 24, Col 29] NAMING_CONVENTION: Single character variable name: 'i'
+IMPROVEMENT [Line 24, Col 29] NAMING_CONVENTION: Single character variable name: 'i'
   Context: Consider using more descriptive names
 
-WARNING [Line 25, Col 9] NAMING_CONVENTION: Single character variable name: 'a'
+IMPROVEMENT [Line 25, Col 9] NAMING_CONVENTION: Single character variable name: 'a'
   Context: Consider using more descriptive names
 
-WARNING [Line 25, Col 11] NAMING_CONVENTION: Single character variable name: 'i'
+IMPROVEMENT [Line 25, Col 11] NAMING_CONVENTION: Single character variable name: 'i'
   Context: Consider using more descriptive names
 
-WARNING [Line 28, Col 36] NAMING_CONVENTION: Single character variable name: 'n'
+IMPROVEMENT [Line 28, Col 36] NAMING_CONVENTION: Single character variable name: 'n'
   Context: Consider using more descriptive names
 
-WARNING [Line 36, Col 20] NAMING_CONVENTION: Single character variable name: 'i'
+IMPROVEMENT [Line 36, Col 20] NAMING_CONVENTION: Single character variable name: 'i'
   Context: Consider using more descriptive names
 
-WARNING [Line 36, Col 27] NAMING_CONVENTION: Single character variable name: 'i'
+IMPROVEMENT [Line 36, Col 27] NAMING_CONVENTION: Single character variable name: 'i'
   Context: Consider using more descriptive names
 
-WARNING [Line 36, Col 31] NAMING_CONVENTION: Single character variable name: 'n'
+IMPROVEMENT [Line 36, Col 31] NAMING_CONVENTION: Single character variable name: 'n'
   Context: Consider using more descriptive names
 
-WARNING [Line 36, Col 34] NAMING_CONVENTION: Single character variable name: 'i'
+IMPROVEMENT [Line 36, Col 34] NAMING_CONVENTION: Single character variable name: 'i'
   Context: Consider using more descriptive names
 
-WARNING [Line 45, Col 20] NAMING_CONVENTION: Single character variable name: 'i'
+IMPROVEMENT [Line 45, Col 20] NAMING_CONVENTION: Single character variable name: 'i'
   Context: Consider using more descriptive names
 
-WARNING [Line 45, Col 27] NAMING_CONVENTION: Single character variable name: 'i'
+IMPROVEMENT [Line 45, Col 27] NAMING_CONVENTION: Single character variable name: 'i'
   Context: Consider using more descriptive names
 
-WARNING [Line 45, Col 31] NAMING_CONVENTION: Single character variable name: 'n'
+IMPROVEMENT [Line 45, Col 31] NAMING_CONVENTION: Single character variable name: 'n'
   Context: Consider using more descriptive names
 
-WARNING [Line 45, Col 34] NAMING_CONVENTION: Single character variable name: 'i'
+IMPROVEMENT [Line 45, Col 34] NAMING_CONVENTION: Single character variable name: 'i'
   Context: Consider using more descriptive names
 
-WARNING [Line 46, Col 9] NAMING_CONVENTION: Single character variable name: 'a'
+IMPROVEMENT [Line 46, Col 9] NAMING_CONVENTION: Single character variable name: 'a'
   Context: Consider using more descriptive names
 
-WARNING [Line 46, Col 11] NAMING_CONVENTION: Single character variable name: 'i'
+IMPROVEMENT [Line 46, Col 11] NAMING_CONVENTION: Single character variable name: 'i'
   Context: Consider using more descriptive names
 
 === END OF LOG ===

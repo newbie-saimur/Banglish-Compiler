@@ -42,7 +42,7 @@ public:
         log << "=== BANGLISH COMPILER ERROR LOG ===\n\n";
         
         if (errors.empty() && warnings.empty()) {
-            log << "No errors or warnings found.\n";
+            log << "No errors or improvements found.\n";
             return;
         }
         
@@ -60,10 +60,10 @@ public:
         }
         
         if (!warnings.empty()) {
-            log << "WARNINGS (" << warnings.size() << "):\n";
+            log << "IMPROVEMENTS (" << warnings.size() << "):\n";
             log << "====================\n";
             for (const auto& warning : warnings) {
-                log << "WARNING [Line " << warning.line << ", Col " << warning.col << "] "
+                log << "IMPROVEMENT [Line " << warning.line << ", Col " << warning.col << "] "
                     << warning.type << ": " << warning.message;
                 if (!warning.context.empty()) {
                     log << "\n  Context: " << warning.context;

@@ -134,14 +134,14 @@ int main(){
     if (errorLogger.hasErrors()) {
         cerr << "Compilation failed with " << errorLogger.getErrorCount() << " error(s)";
         if (errorLogger.hasWarnings()) {
-            cerr << " and " << errorLogger.getWarningCount() << " warning(s)";
+            cerr << " and " << errorLogger.getWarningCount() << " improvement(s)";
         }
         cerr << ". See error_log.txt for details.\n";
         // Continue with transpilation even with errors for educational purposes
     } else if (errorLogger.hasWarnings()) {
-        cout << "Compilation successful with " << errorLogger.getWarningCount() << " warning(s). See error_log.txt for details.\n";
+        cout << "Compilation successful with " << errorLogger.getWarningCount() << " improvement(s). See error_log.txt for details.\n";
     } else {
-        cout << "Compilation successful with no errors or warnings.\n";
+        cout << "Compilation successful with no errors or improvements.\n";
     }
 
     // Transpile
