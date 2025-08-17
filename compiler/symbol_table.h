@@ -5,7 +5,7 @@
 
 struct Symbol {
     std::string name;
-    std::string dtype; // int,float,string,char,bool
+    std::string dtype;
     int line;
     bool initialized;
 };

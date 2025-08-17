@@ -7,7 +7,7 @@
 
 static const std::set<std::string> BG_KEYWORDS = {
     "shuru","shesh","purno","sonkha","dosomik","lekha","akkhor","sotto-mittha",
-    "jodi","nahoy","poro","dekhao","loop"
+    "jodi","nahoy","poro","dekhao","loop","ferot","dao"
 };
 
 static const std::set<std::string> BG_SIMPLE_OPS = {

@@ -2,7 +2,7 @@
 #include <string>
 
 struct Token {
-    std::string type; // IDENT, KEYWORD, NUMBER, STRING, OP, PUNC, BOOL, CHAR
+    std::string type;
     std::string lexeme;
     int line;
     int col;

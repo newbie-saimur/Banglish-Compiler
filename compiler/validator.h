@@ -7,19 +7,15 @@
 
 namespace bg {
 
-// Validate each token's lexeme against expected forms
 inline std::vector<std::string> validateTokens(const std::vector<Token>& toks){
     std::vector<std::string> errors;
     std::regex reIdent(R"(^[A-Za-z_]\w*$)");
     std::regex reNumber(R"(^\d+(?:\.\d+)?$)");
-    // strings are already quoted with escapes preserved
     std::regex reString(R"(^"(?:\\.|[^"])*"$)");
     std::regex reOp(R"(^(\+\+|--|\+=|-=|\*=|/=|<=|>=|==|!=|&&|\|\||[+*/%<>=!&|(){};,\[\]-])$)");
 
     const std::unordered_set<std::string> kw = {
-        // single-word
         "shuru","shesh","lekha","akkhor","sotto-mittha","jodi","nahoy","poro","dekhao","loop",
-        // multi-word
         "purno sonkha","dosomik sonkha","ferot dao","nahoy jodi"
     };
 
@@ -39,10 +35,8 @@ inline std::vector<std::string> validateTokens(const std::vector<Token>& toks){
     return errors;
 }
 
-// Validate each non-empty line against simple statement regexes
 inline std::vector<std::string> validateLines(const std::string& source){
     auto trim = [](const std::string& s){ size_t a=s.find_first_not_of(" \t\r\n"); if(a==std::string::npos) return std::string(); size_t b=s.find_last_not_of(" \t\r\n"); return s.substr(a,b-a+1); };
-    // Declarations (with optional array size and optional initializer)
     std::regex reDecl(R"(^(purno sonkha|dosomik sonkha|lekha|akkhor|sotto-mittha)\s+[A-Za-z_]\w*(?:\s*\[\s*[^\]]+\s*\])?(?:\s*=\s*[^;]+)?\s*;\s*$)");
     std::regex reInput(R"(^poro\s*\(\s*[^)]+\)\s*;?\s*$)");
     std::regex rePrint(R"(^dekhao\s+.+;?\s*$)");
@@ -55,7 +49,6 @@ inline std::vector<std::string> validateLines(const std::string& source){
     std::regex reLoop(R"(^loop\s*\(.*;.*;.*\)\s*\{?\s*$)");
     std::regex reOnlyOpen(R"(^\{\s*$)");
     std::regex reOnlyClose(R"(^\}\s*$)");
-    // Assignments and increments (with optional indexing)
     std::regex reAssign(R"(^\s*(?:\+\+|--)?\s*[A-Za-z_]\w*(?:\s*\[\s*[^\]]+\s*\])?\s*(?:\+\+|--|=(?:[^;]+)|\+=\s*[^;]+|-=\s*[^;]+|\*=\s*[^;]+|/=\s*[^;]+|%=\s*[^;]+)?\s*;?\s*$)");
 
     std::vector<std::string> errors;
@@ -64,7 +57,6 @@ inline std::vector<std::string> validateLines(const std::string& source){
         ++ln; std::string L = trim(line);
         if(L.empty()) continue;
         if(L=="shuru" || L=="shesh") continue;
-        // allow leading '}'s, as transpiler does
         while(!L.empty() && L[0]=='}'){
             L = trim(L.substr(1));
         }
@@ -90,4 +82,4 @@ inline std::vector<std::string> validateLines(const std::string& source){
     return errors;
 }
 
-} // namespace bg
+}
