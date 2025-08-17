@@ -4,115 +4,192 @@
 #include "compiler/parser.h"
 using namespace std;
 
-static void writeTable(const vector<Token>& toks, const SymbolTable& sym){
-    {
-        ofstream f("output_tokens.txt");
-    std::set<string> uniq;
-    for(const auto& t: toks){ if(t.type!="EOF") uniq.insert(t.lexeme); }
-    vector<string> lex(uniq.begin(), uniq.end());
-
-    const int COLS = 3;
-        size_t rows = (lex.size() + COLS - 1) / COLS;
-    vector<vector<string>> grid(rows, vector<string>(COLS, ""));
-        for(size_t i=0;i<lex.size();++i){ grid[i/ COLS][i % COLS] = lex[i]; }
-    vector<size_t> w(COLS, 0);
-    auto maxsz=[&](size_t a, size_t b){ return a>b? a:b; };
-    const size_t TARGET_INNER = 123;
-    const size_t targetSum = TARGET_INNER - (COLS - 1);
-    size_t baseEach = (targetSum / COLS);
-    if (baseEach >= 2) baseEach -= 2; else baseEach = 0;
-    size_t rem = targetSum - COLS * (baseEach + 2);
-    for(int c=0;c<COLS;++c){ w[c] = baseEach + (c < (int)rem ? 1 : 0); }
-        for(size_t r=0;r<rows;++r){ for(int c=0;c<COLS;++c){ w[c] = maxsz(w[c], grid[r][c].size()); } }
-        auto border = [&](ostream& o){
-            o << '+'; for(int c=0;c<COLS;++c){ o << string(w[c]+2,'-') << '+'; } o << "\n"; };
-        auto cell = [&](const string& s, size_t wi){ f << ' ' << left << setw((int)wi) << s << ' '; };
-        border(f);
-            size_t totalContent = 0; for(int c=0;c<COLS;++c) totalContent += (w[c] + 2);
-            totalContent += (COLS - 1);
-                const string title = "Tokens";
-                size_t padL = (totalContent > title.size()) ? (totalContent - title.size())/2 : 0;
-                size_t padR = (totalContent > title.size()) ? (totalContent - title.size() - padL) : 0;
-                f << '|'
-                    << string(padL, ' ') << title << string(padR, ' ')
-                    << '|'
-                    << "\n";
-                border(f);
-        for(size_t r=0;r<rows;++r){
-            f << '|'; for(int c=0;c<COLS;++c){ cell(grid[r][c], w[c]); f << '|'; } f << "\n";
+void writeTokenTable(const vector<Token>& tokens) {
+    ofstream file("output_tokens.txt");
+    
+    set<string> uniqueTokens;
+    for(const auto& token : tokens) {
+        if(token.type != "EOF") {
+            uniqueTokens.insert(token.lexeme);
         }
-                border(f);
-                {
-                        size_t totalContent = 0; for(int c=0;c<COLS;++c) totalContent += (w[c] + 2);
-                        totalContent += (COLS - 1);
-                        std::ostringstream oss; oss << "Total tokens found : " << lex.size();
-                        string ft = oss.str();
-                        size_t padL = (totalContent > ft.size()) ? (totalContent - ft.size())/2 : 0;
-                        size_t padR = (totalContent > ft.size()) ? (totalContent - ft.size() - padL) : 0;
-                        f << '|'
-                            << string(padL, ' ') << ft << string(padR, ' ')
-                            << '|' << "\n";
-                        border(f);
-                }
     }
-    {
-        ofstream f("output_symbol_table.txt");
-        vector<Symbol> rows = sym.all();
-        auto dispType = [](const string& t)->string{
-            if(t == "std::string") return "string";
-            const string p = "std::";
-            if(t.rfind(p,0)==0) return t.substr(p.size());
-            return t;
-        };
-    size_t nameW = max<size_t>(22, string("Name").size());
-    size_t typeW = max<size_t>(22, string("Type").size());
-    size_t lineW = max<size_t>(18, string("Line").size());
-    size_t initW = max<size_t>(18, string("Init").size());
-        for(const auto& s: rows){
-            nameW = max(nameW, s.name.size());
-            typeW = max(typeW, dispType(s.dtype).size());
-            lineW = max(lineW, to_string(s.line).size());
-            initW = max(initW, string(s.initialized?"yes":"no").size());
+    
+    const int COLS = 3;
+    vector<string> tokenList(uniqueTokens.begin(), uniqueTokens.end());
+    size_t rows = (tokenList.size() + COLS - 1) / COLS;
+    
+    // Create grid
+    vector<vector<string>> grid(rows, vector<string>(COLS, ""));
+    for(size_t i = 0; i < tokenList.size(); ++i) {
+        grid[i / COLS][i % COLS] = tokenList[i];
+    }
+    
+    // Calculate column widths
+    vector<size_t> colWidths(COLS, 15); // Minimum width
+    for(size_t r = 0; r < rows; ++r) {
+        for(int c = 0; c < COLS; ++c) {
+            colWidths[c] = max(colWidths[c], grid[r][c].size());
         }
-        auto border = [&](ostream& o){
-            o << '+' << string(nameW+2,'-')
-              << '+' << string(typeW+2,'-')
-              << '+' << string(lineW+2,'-')
-              << '+' << string(initW+2,'-')
-              << "+\n";
-        };
-        auto cell = [&](const string& s, size_t w){ f << ' ' << left << setw((int)w) << s << ' '; };
+    }
+    
+    // Helper functions
+    auto printBorder = [&]() {
+        file << '+';
+        for(int c = 0; c < COLS; ++c) {
+            file << string(colWidths[c] + 2, '-') << '+';
+        }
+        file << "\n";
+    };
+    
+    auto printCell = [&](const string& text, size_t width) {
+        file << ' ' << left << setw(width) << text << ' ';
+    };
+    
+    // Print table
+    printBorder();
+    
+    // Header
+    size_t totalWidth = 0;
+    for(int c = 0; c < COLS; ++c) {
+        totalWidth += colWidths[c] + 2;
+    }
+    totalWidth += COLS - 1;
+    
+    string title = "Tokens";
+    size_t padding = (totalWidth - title.size()) / 2;
+    file << '|' << string(padding, ' ') << title 
+         << string(totalWidth - title.size() - padding, ' ') << "|\n";
+    
+    printBorder();
+    
+    // Data rows
+    for(size_t r = 0; r < rows; ++r) {
+        file << '|';
+        for(int c = 0; c < COLS; ++c) {
+            printCell(grid[r][c], colWidths[c]);
+            file << '|';
+        }
+        file << "\n";
+    }
+    
+    printBorder();
+    
+    // Footer
+    string footer = "Total tokens found : " + to_string(tokenList.size());
+    padding = (totalWidth - footer.size()) / 2;
+    file << '|' << string(padding, ' ') << footer 
+         << string(totalWidth - footer.size() - padding, ' ') << "|\n";
+    
+    printBorder();
+}
 
-        border(f);
-        f << '|' ; cell("Name", nameW); f << '|'; cell("Type", typeW); f << '|'; cell("Line", lineW); f << '|'; cell("Init", initW); f << "|\n";
-        border(f);
-        for(const auto& s: rows){
-            f << '|'; cell(s.name, nameW);
-            f << '|'; cell(dispType(s.dtype), typeW);
-            f << '|'; cell(to_string(s.line), lineW);
-            f << '|'; cell(string(s.initialized?"yes":"no"), initW);
-            f << "|\n";
+void writeSymbolTable(const SymbolTable& symbolTable) {
+    ofstream file("output_symbol_table.txt");
+    vector<Symbol> symbols = symbolTable.all();
+    
+    // Column widths
+    size_t nameWidth = max(size_t(15), string("Name").size());
+    size_t typeWidth = max(size_t(15), string("Type").size());
+    size_t lineWidth = max(size_t(8), string("Line").size());
+    size_t initWidth = max(size_t(8), string("Init").size());
+    
+    // Calculate actual required widths
+    for(const auto& symbol : symbols) {
+        nameWidth = max(nameWidth, symbol.name.size());
+        typeWidth = max(typeWidth, symbol.dtype.size());
+        lineWidth = max(lineWidth, to_string(symbol.line).size());
+        initWidth = max(initWidth, size_t(3)); // "yes" or "no"
+    }
+    
+    auto printBorder = [&]() {
+        file << '+' << string(nameWidth + 2, '-')
+             << '+' << string(typeWidth + 2, '-')
+             << '+' << string(lineWidth + 2, '-')
+             << '+' << string(initWidth + 2, '-') << "+\n";
+    };
+    
+    auto printCell = [&](const string& text, size_t width) {
+        file << ' ' << left << setw(width) << text << ' ';
+    };
+    
+    // Print table
+    printBorder();
+    file << '|'; printCell("Name", nameWidth);
+    file << '|'; printCell("Type", typeWidth);
+    file << '|'; printCell("Line", lineWidth);
+    file << '|'; printCell("Init", initWidth);
+    file << "|\n";
+    printBorder();
+    
+    for(const auto& symbol : symbols) {
+        file << '|'; printCell(symbol.name, nameWidth);
+        file << '|'; printCell(symbol.dtype, typeWidth);
+        file << '|'; printCell(to_string(symbol.line), lineWidth);
+        file << '|'; printCell(symbol.initialized ? "yes" : "no", initWidth);
+        file << "|\n";
+    }
+    
+    printBorder();
+}
+string readSourceFile(const string& filename) {
+    ifstream file(filename);
+    if (!file) {
+        cerr << "Error: Cannot open " << filename << "\n";
+        exit(1);
+    }
+    return string((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+}
+
+void writeValidation(const vector<Token>& tokens, const string& source) {
+    ofstream file("output_validation.txt");
+    auto tokenErrors = bg::validateTokens(tokens);
+    auto lineErrors = bg::validateLines(source);
+    
+    if (tokenErrors.empty() && lineErrors.empty()) {
+        file << "OK\n";
+    } else {
+        for (const auto& error : tokenErrors) {
+            file << error << "\n";
         }
-        border(f);
+        for (const auto& error : lineErrors) {
+            file << error << "\n";
+        }
     }
 }
 
-int main(){
+string getCompilerCommand(const string& sourceFile, const string& outputFile) {
+#ifdef _WIN32
+    if (system("where cl >nul 2>nul") == 0) {
+        return "cl /nologo /EHsc /std:c++17 \"" + sourceFile + "\" /Fe:" + outputFile;
+    } else if (system("where g++ >nul 2>nul") == 0) {
+        return "g++ -std=c++17 -O2 -o \"" + outputFile + "\" \"" + sourceFile + "\"";
+    } else {
+        cerr << "Error: No C++ compiler found (cl or g++)\n";
+        exit(2);
+    }
+#else
+    return "g++ -std=c++17 -O2 -o \"" + outputFile + "\" \"" + sourceFile + "\"";
+#endif
+}
+
+int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
-
-    ifstream sf("main.banglish");
-    if(!sf){ cerr << "main.banglish not found\n"; return 1; }
-    string source((istreambuf_iterator<char>(sf)), istreambuf_iterator<char>());
-
-    Lexer lx(source); lx.lex();
-
-    ErrorLogger errorLogger("error_log.txt");
-    BanglishParser parser(lx.tokens, errorLogger);
-    parser.parse();
     
+    // Read source code
+    string source = readSourceFile("main.banglish");
+    
+    // Tokenization
+    Lexer lexer(source);
+    lexer.lex();
+    
+    // Parsing and validation
+    ErrorLogger errorLogger("error_log.txt");
+    BanglishParser parser(lexer.tokens, errorLogger);
+    parser.parse();
     errorLogger.writeLog();
     
+    // Report compilation status
     if (errorLogger.hasErrors()) {
         cerr << "Compilation failed with " << errorLogger.getErrorCount() << " error(s)";
         if (errorLogger.hasWarnings()) {
@@ -120,60 +197,55 @@ int main(){
         }
         cerr << ". See error_log.txt for details.\n";
     } else if (errorLogger.hasWarnings()) {
-        cout << "Compilation successful with " << errorLogger.getWarningCount() << " improvement(s). See error_log.txt for details.\n";
+        cout << "Compilation successful with " << errorLogger.getWarningCount() 
+             << " improvement(s). See error_log.txt for details.\n";
     } else {
         cout << "Compilation successful with no errors or improvements.\n";
     }
-
-    Transpiler tr; tr.toks = lx.tokens; string cpp = tr.transpile(source);
-    {
-        ofstream vf("output_validation.txt");
-        auto terrs = bg::validateTokens(lx.tokens);
-        auto lerrs = bg::validateLines(source);
-        if(terrs.empty() && lerrs.empty()){
-            vf << "OK\n";
-        } else {
-            for(const auto& e: terrs) vf << e << "\n";
-            for(const auto& e: lerrs) vf << e << "\n";
-        }
-    }
-
-    writeTable(lx.tokens, tr.sym);
-
+    
+    // Transpilation
+    Transpiler transpiler;
+    transpiler.toks = lexer.tokens;
+    string cppCode = transpiler.transpile(source);
+    
+    // Write output files
+    writeValidation(lexer.tokens, source);
+    writeTokenTable(lexer.tokens);
+    writeSymbolTable(transpiler.sym);
+    
+    // Create build directory
     system("mkdir .generated 2>nul || echo Directory exists");
-    string transpiledPath = string(".generated/") + "transpiled.cpp";
-    ofstream tc(transpiledPath); tc << cpp; tc.close();
-
-    string exe;
-    string cmd;
+    
+    // Write and compile transpiled code
+    string transpiledPath = ".generated/transpiled.cpp";
+    ofstream transpiledFile(transpiledPath);
+    transpiledFile << cppCode;
+    transpiledFile.close();
+    
+    string executablePath;
 #ifdef _WIN32
-    exe = string(".generated\\") + "program.exe";
-    int hasCL = system("where cl >nul 2>nul");
-    if(hasCL == 0){
-        cmd = string("cl /nologo /EHsc /std:c++17 \"") + transpiledPath + "\" /Fe:" + exe;
-    } else {
-        int hasGPP = system("where g++ >nul 2>nul");
-        if(hasGPP != 0){
-            cerr << "No C++ compiler found (cl or g++). Install Visual Studio Build Tools or MinGW.\n";
-            return 2;
-        }
-        cmd = string("g++ -std=c++17 -O2 -o \"") + exe + "\" \"" + transpiledPath + "\"";
+    executablePath = ".generated\\program.exe";
+#else
+    executablePath = ".generated/program";
+#endif
+    
+    string compileCommand = getCompilerCommand(transpiledPath, executablePath);
+    if (system(compileCommand.c_str()) != 0) {
+        cerr << "Error: Compilation of transpiled code failed\n";
+        return 2;
     }
-#else
-    exe = string(".generated/") + "program";
-    cmd = string("g++ -std=c++17 -O2 -o \"") + exe + "\" \"" + transpiledPath + "\"";
-#endif
-
-    int ret = system(cmd.c_str());
-    if(ret!=0){ cerr << "Compilation of transpiled code failed\n"; return 2; }
-
+    
+    // Run the compiled program
 #ifdef _WIN32
-    string runCmd = string("\"") + exe + "\" < input.txt > output.txt";
+    string runCommand = "\"" + executablePath + "\" < input.txt > output.txt";
 #else
-    string runCmd = string("./") + exe + " < input.txt > output.txt";
+    string runCommand = "./" + executablePath + " < input.txt > output.txt";
 #endif
-    ret = system(runCmd.c_str());
-    if(ret!=0){ cerr << "Program exited with code " << ret << "\n"; }
-
+    
+    int exitCode = system(runCommand.c_str());
+    if (exitCode != 0) {
+        cerr << "Program exited with code " << exitCode << "\n";
+    }
+    
     return 0;
 }
