@@ -5,42 +5,51 @@
 #include "compiler/parser.h"
 using namespace std;
 
-// Writes a simple table of unique token lexemes to output_tokens.txt
+// Writes a table of unique tokens with types and lexemes in 4 columns to output_tokens.txt
 void writeTokenTable(const vector<Token>& tokens) {
     ofstream file("output_tokens.txt");
     
-    set<string> uniqueTokens;
+    // Collect unique tokens using a map to preserve type-lexeme pairs
+    map<pair<string, string>, bool> uniqueTokenMap;
     for(const auto& token : tokens) {
         if(token.type != "EOF") {
-            uniqueTokens.insert(token.lexeme);
+            uniqueTokenMap[{token.type, token.lexeme}] = true;
         }
     }
     
-    const int COLS = 3;
-    vector<string> tokenList(uniqueTokens.begin(), uniqueTokens.end());
-    size_t rows = (tokenList.size() + COLS - 1) / COLS;
-    
-    // Create grid
-    vector<vector<string>> grid(rows, vector<string>(COLS, ""));
-    for(size_t i = 0; i < tokenList.size(); ++i) {
-        grid[i / COLS][i % COLS] = tokenList[i];
+    // Convert to vector for easier processing
+    vector<pair<string, string>> uniqueTokens;
+    for(const auto& entry : uniqueTokenMap) {
+        uniqueTokens.push_back(entry.first);
     }
     
-    // Calculate column widths
-    vector<size_t> colWidths(COLS, 15); // Minimum width
-    for(size_t r = 0; r < rows; ++r) {
-        for(int c = 0; c < COLS; ++c) {
-            colWidths[c] = max(colWidths[c], grid[r][c].size());
+    // Arrange in 4 columns: Token Type | Lexeme | Token Type | Lexeme
+    const int COLS = 2; // 2 pairs of (Token Type, Lexeme)
+    size_t rows = (uniqueTokens.size() + COLS - 1) / COLS;
+    
+    // Column widths
+    size_t typeWidth1 = max(size_t(12), string("Token Type").size());
+    size_t lexemeWidth1 = max(size_t(15), string("Lexeme").size());
+    size_t typeWidth2 = max(size_t(12), string("Token Type").size());
+    size_t lexemeWidth2 = max(size_t(15), string("Lexeme").size());
+    
+    // Calculate actual required widths for both columns
+    for(size_t i = 0; i < uniqueTokens.size(); ++i) {
+        if(i % 2 == 0) { // Left side (first pair)
+            typeWidth1 = max(typeWidth1, uniqueTokens[i].first.size());
+            lexemeWidth1 = max(lexemeWidth1, uniqueTokens[i].second.size());
+        } else { // Right side (second pair)
+            typeWidth2 = max(typeWidth2, uniqueTokens[i].first.size());
+            lexemeWidth2 = max(lexemeWidth2, uniqueTokens[i].second.size());
         }
     }
     
     // Helper functions
     auto printBorder = [&]() {
-        file << '+';
-        for(int c = 0; c < COLS; ++c) {
-            file << string(colWidths[c] + 2, '-') << '+';
-        }
-        file << "\n";
+        file << '+' << string(typeWidth1 + 2, '-')
+             << '+' << string(lexemeWidth1 + 2, '-')
+             << '+' << string(typeWidth2 + 2, '-')
+             << '+' << string(lexemeWidth2 + 2, '-') << "+\n";
     };
     
     auto printCell = [&](const string& text, size_t width) {
@@ -51,41 +60,59 @@ void writeTokenTable(const vector<Token>& tokens) {
     printBorder();
     
     // Header
-    size_t totalWidth = 0;
-    for(int c = 0; c < COLS; ++c) {
-        totalWidth += colWidths[c] + 2;
-    }
-    totalWidth += COLS - 1;
-    
-    string title = "Tokens";
-    size_t padding = (totalWidth - title.size()) / 2;
-    file << '|' << string(padding, ' ') << title 
-         << string(totalWidth - title.size() - padding, ' ') << "|\n";
-    
+    file << '|'; printCell("Token Type", typeWidth1);
+    file << '|'; printCell("Lexeme", lexemeWidth1);
+    file << '|'; printCell("Token Type", typeWidth2);
+    file << '|'; printCell("Lexeme", lexemeWidth2);
+    file << "|\n";
     printBorder();
     
     // Data rows
-    for(size_t r = 0; r < rows; ++r) {
+    for(size_t row = 0; row < rows; ++row) {
         file << '|';
-        for(int c = 0; c < COLS; ++c) {
-            printCell(grid[r][c], colWidths[c]);
+        
+        // Left pair (Token Type | Lexeme)
+        size_t leftIndex = row * 2;
+        if(leftIndex < uniqueTokens.size()) {
+            printCell(uniqueTokens[leftIndex].first, typeWidth1);
             file << '|';
+            printCell(uniqueTokens[leftIndex].second, lexemeWidth1);
+        } else {
+            printCell("", typeWidth1);
+            file << '|';
+            printCell("", lexemeWidth1);
         }
-        file << "\n";
+        
+        file << '|';
+        
+        // Right pair (Token Type | Lexeme)
+        size_t rightIndex = row * 2 + 1;
+        if(rightIndex < uniqueTokens.size()) {
+            printCell(uniqueTokens[rightIndex].first, typeWidth2);
+            file << '|';
+            printCell(uniqueTokens[rightIndex].second, lexemeWidth2);
+        } else {
+            printCell("", typeWidth2);
+            file << '|';
+            printCell("", lexemeWidth2);
+        }
+        
+        file << "|\n";
     }
     
     printBorder();
     
     // Footer
-    string footer = "Total tokens found : " + to_string(tokenList.size());
-    padding = (totalWidth - footer.size()) / 2;
+    size_t totalWidth = typeWidth1 + lexemeWidth1 + typeWidth2 + lexemeWidth2 + 10; // +10 for borders and spaces
+    string footer = "Unique tokens: " + to_string(uniqueTokens.size());
+    size_t padding = (totalWidth - footer.size()) / 2;
     file << '|' << string(padding, ' ') << footer 
          << string(totalWidth - footer.size() - padding, ' ') << "|\n";
     
     printBorder();
 }
 
-// Writes symbol table (name, type, line, initialized) to output_symbol_table.txt
+// Writes symbol table (name, type, line, initialized, value) to output_symbol_table.txt
 void writeSymbolTable(const SymbolTable& symbolTable) {
     ofstream file("output_symbol_table.txt");
     vector<Symbol> symbols = symbolTable.all();
@@ -95,6 +122,7 @@ void writeSymbolTable(const SymbolTable& symbolTable) {
     size_t typeWidth = max(size_t(15), string("Type").size());
     size_t lineWidth = max(size_t(8), string("Line").size());
     size_t initWidth = max(size_t(8), string("Init").size());
+    size_t valueWidth = max(size_t(15), string("Value").size());
     
     // Calculate actual required widths
     for(const auto& symbol : symbols) {
@@ -102,13 +130,15 @@ void writeSymbolTable(const SymbolTable& symbolTable) {
         typeWidth = max(typeWidth, symbol.dtype.size());
         lineWidth = max(lineWidth, to_string(symbol.line).size());
         initWidth = max(initWidth, size_t(3)); // "yes" or "no"
+        valueWidth = max(valueWidth, symbol.value.empty() ? size_t(5) : symbol.value.size()); // "N/A" or actual value
     }
     
     auto printBorder = [&]() {
         file << '+' << string(nameWidth + 2, '-')
              << '+' << string(typeWidth + 2, '-')
              << '+' << string(lineWidth + 2, '-')
-             << '+' << string(initWidth + 2, '-') << "+\n";
+             << '+' << string(initWidth + 2, '-')
+             << '+' << string(valueWidth + 2, '-') << "+\n";
     };
     
     auto printCell = [&](const string& text, size_t width) {
@@ -121,6 +151,7 @@ void writeSymbolTable(const SymbolTable& symbolTable) {
     file << '|'; printCell("Type", typeWidth);
     file << '|'; printCell("Line", lineWidth);
     file << '|'; printCell("Init", initWidth);
+    file << '|'; printCell("Value", valueWidth);
     file << "|\n";
     printBorder();
     
@@ -129,6 +160,7 @@ void writeSymbolTable(const SymbolTable& symbolTable) {
         file << '|'; printCell(symbol.dtype, typeWidth);
         file << '|'; printCell(to_string(symbol.line), lineWidth);
         file << '|'; printCell(symbol.initialized ? "yes" : "no", initWidth);
+        file << '|'; printCell(symbol.value.empty() ? "N/A" : symbol.value, valueWidth);
         file << "|\n";
     }
     

@@ -79,7 +79,7 @@ struct Transpiler {
                 if(!name.empty() && name.back()==';') name.pop_back();
                 if(!init.empty() && init.back()==';') init.pop_back();
                 if(!name.empty()) sym.declare(name,cxxType,lineNo);
-                if(!init.empty()) sym.initialize(name);
+                if(!init.empty()) sym.initialize(name, init); // Pass the initialization value
                 std::string stmt = cxxType + " " + name; if(!init.empty()) stmt += " = " + init; stmt += ";"; out.push_back(stmt); return true; };
 
             if(L.rfind("purno sonkha",0)==0){ if(handleDecl("purno sonkha")) continue; }
@@ -93,7 +93,7 @@ struct Transpiler {
                 if(lp!=std::string::npos && rp!=std::string::npos && rp>lp){
                     std::string var = trim_str(L.substr(lp+1, rp-lp-1));
                     if(!var.empty() && var.back()==';') var.pop_back();
-                    sym.initialize(var);
+                    sym.initialize(var, "user_input"); // Mark as initialized with user input
                     std::string type=""; if(sym.table.count(var)) type = sym.table[var].dtype;
                     std::string stmt; if(type=="std::string") stmt = "getline(cin >> ws, "+var+");"; else stmt = "cin >> "+var+";";
                     out.push_back(stmt); continue; }
@@ -119,12 +119,12 @@ struct Transpiler {
                 if(lp!=std::string::npos && sc!=std::string::npos && sc>lp){
                     std::string init = trim_str(L.substr(lp+1, sc-lp-1));
                     std::vector<std::pair<std::string,std::string>> types = {{"purno sonkha","int"},{"dosomik sonkha","double"},{"lekha","std::string"},{"akkhor","char"},{"sotto-mittha","bool"},{"int","int"},{"double","double"},{"std::string","std::string"},{"char","char"},{"bool","bool"}};
-                    for(auto &p: types){ const std::string& t=p.first; const std::string& cxx=p.second; if(init.rfind(t,0)==0){ std::string rest = trim_str(init.substr(t.size())); if(!rest.empty() && rest[0]==' ') rest = trim_str(rest); std::string name = rest; size_t eq = rest.find('='); if(eq!=std::string::npos) name = trim_str(rest.substr(0,eq)); if(!name.empty()) sym.declare(name,cxx,lineNo), sym.initialize(name); break; } }
+                    for(auto &p: types){ const std::string& t=p.first; const std::string& cxx=p.second; if(init.rfind(t,0)==0){ std::string rest = trim_str(init.substr(t.size())); if(!rest.empty() && rest[0]==' ') rest = trim_str(rest); std::string name = rest; std::string value = ""; size_t eq = rest.find('='); if(eq!=std::string::npos){ name = trim_str(rest.substr(0,eq)); value = trim_str(rest.substr(eq+1)); } if(!name.empty()){ sym.declare(name,cxx,lineNo); if(!value.empty()) sym.initialize(name, value); } break; } }
                 }
                 out.push_back(X); continue; 
             }
 
-            { size_t eq = L.find('='); if(eq!=std::string::npos){ std::string lhs = trim_str(L.substr(0,eq)); if(!lhs.empty() && isalpha((unsigned char)lhs[0])){ sym.initialize(lhs); } } }
+            { size_t eq = L.find('='); if(eq!=std::string::npos){ std::string lhs = trim_str(L.substr(0,eq)); std::string rhs = trim_str(L.substr(eq+1)); if(!rhs.empty() && rhs.back()==';') rhs.pop_back(); if(!lhs.empty() && isalpha((unsigned char)lhs[0])){ sym.initialize(lhs, rhs); } } }
             out.push_back(L);
         }
         out.push_back("}");

@@ -1,21 +1,29 @@
-+--------------------------+-------------------------+------------------+
-|                                Tokens                                 |
-+--------------------------+-------------------------+------------------+
-| "Avg: {avg}\n"           | "Even count: {evens}\n" | "Invalid size\n" |
-| "Min: {mn}, Max: {mx}\n" | "Reversed: "            | "Sum: {sum}\n"   |
-| "\n"                     | "{a[i]} "               | %                |
-| (                        | )                       | ++               |
-| +=                       | /                       | 0                |
-| 2                        | ;                       | <                |
-| <=                       | =                       | ==               |
-| >                        | [                       | ]                |
-| a                        | avg                     | dekhao           |
-| dosomik sonkha           | double                  | evens            |
-| ferot dao                | i                       | jodi             |
-| loop                     | mn                      | mx               |
-| n                        | poro                    | purno sonkha     |
-| shesh                    | shuru                   | sum              |
-| target                   | {                       | }                |
-+--------------------------+-------------------------+------------------+
-|                        Total tokens found : 45                        |
-+--------------------------+-------------------------+------------------+
++--------------+--------------------------+--------------+------------------+
+| Token Type   | Lexeme                   | Token Type   | Lexeme           |
++--------------+--------------------------+--------------+------------------+
+| IDENT        | a                        | IDENT        | avg              |
+| IDENT        | double                   | IDENT        | evens            |
+| IDENT        | i                        | IDENT        | mn               |
+| IDENT        | mx                       | IDENT        | n                |
+| IDENT        | sum                      | IDENT        | target           |
+| KEYWORD      | dekhao                   | KEYWORD      | dosomik sonkha   |
+| KEYWORD      | ferot dao                | KEYWORD      | jodi             |
+| KEYWORD      | loop                     | KEYWORD      | poro             |
+| KEYWORD      | purno sonkha             | KEYWORD      | shesh            |
+| KEYWORD      | shuru                    | NUMBER       | 0                |
+| NUMBER       | 2                        | OP           | %                |
+| OP           | (                        | OP           | )                |
+| OP           | ++                       | OP           | +=               |
+| OP           | /                        | OP           | ;                |
+| OP           | <                        | OP           | <=               |
+| OP           | =                        | OP           | ==               |
+| OP           | >                        | OP           | [                |
+| OP           | ]                        | OP           | {                |
+| OP           | }                        | STRING       | "Avg: {avg}\n"   |
+| STRING       | "Even count: {evens}\n"  | STRING       | "Invalid size\n" |
+| STRING       | "Min: {mn}, Max: {mx}\n" | STRING       | "Reversed: "     |
+| STRING       | "Sum: {sum}\n"           | STRING       | "\n"             |
+| STRING       | "{a[i]} "                |              |                  |
++--------------+--------------------------+--------------+------------------+
+|                            Unique tokens: 45                             |
++--------------+--------------------------+--------------+------------------+
